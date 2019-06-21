@@ -1,0 +1,114 @@
+#include "../HEADERS/DEFINE.H"
+#include "../HEADERS/DEFINE_extra.H"
+#include "../HEADERS/command.H"
+#include "../HEADERS/den.H"
+#include "../HEADERS/sfall.H"
+
+
+variable player_outdoorsman;
+procedure start;
+
+procedure death_control;
+
+procedure start begin
+
+
+   if (game_loaded) then begin
+      register_hook_proc(3, death_control);
+
+   end
+end
+
+procedure death_control begin
+
+   variable LVar0 := 0;
+   variable LVar1 := 0;
+   variable LVar2 := 0;
+   variable LVar3 := 0;
+   variable food_fruit;
+   variable food_iguana;
+   variable food_iguana_2;
+   variable food_cookie;
+   variable food_jerky;
+   variable food_cheesy_poofs;
+   variable food_mutated_toe;
+   variable random_num;
+   variable dropped_hex;
+   variable critter_flags;
+   variable item;
+   variable item_count;
+   variable number_modifier;
+   variable while_int := 0;
+
+   item := "";
+
+   food_fruit := create_object (00000071, 0, 0);
+   food_iguana := create_object (00000081, 0, 0);
+   food_iguana_2 := create_object (00000103, 0, 0);
+   food_cookie := create_object (00000378, 0, 0);
+   food_jerky := create_object (00000284, 0, 0);
+   food_cheesy_poofs := create_object (00000295, 0, 0);
+   food_mutated_toe := create_object (00000473, 0, 0);
+
+
+
+   LVar0 := get_sfall_arg;
+   LVar1 := get_sfall_arg;
+   LVar2 := get_sfall_arg;
+   LVar3 := get_sfall_arg;
+   dropped_hex := tile_num_in_direction(tile_num(Lvar2), random(0, 5), random(1, 2));
+   critter_flags := get_proto_data(obj_pid(Lvar2), 32);
+
+   if (Lvar1==dude_obj) then begin
+
+      random_num := random(0, 100);
+      player_outdoorsman := has_skill(dude_obj, 17);
+      number_modifier := player_outdoorsman / 100;
+      //display_msg("OUTDOORSMAN: " + player_outdoorsman + " Random: " + random_num);
+      //display_msg("Target: " + critter_kill_type(Lvar2));
+      switch (critter_kill_type(Lvar2)) begin
+
+         case 0: begin if (random_num < player_outdoorsman) then begin item := food_cookie; item_count := 1+number_modifier; end end
+         case 1: begin if (random_num < player_outdoorsman) then begin item := food_cookie; item_count := 1+number_modifier; end end
+         case 2: begin if (random_num<player_outdoorsman) then begin item := food_cheesy_poofs; item_count := 1+number_modifier; end end
+         case 3: begin if (random_num<player_outdoorsman) then begin item := food_mutated_toe; item_count := 3+number_modifier; end end
+         case 4: begin if (random_num<player_outdoorsman) then begin item := food_mutated_toe; item_count := 1+number_modifier; end end
+         case 5: begin if (random_num<player_outdoorsman) then begin item := food_jerky; item_count := 2+number_modifier; end end
+         case 6: begin if (random_num<player_outdoorsman) then begin item := food_jerky; item_count := 1+number_modifier; end end
+         case 7: begin if (random_num<player_outdoorsman) then begin item := food_jerky; item_count := 1+number_modifier; end end
+         case 8: begin if (random_num < player_outdoorsman) then begin item := food_mutated_toe; item_count := 2+number_modifier; end end
+         case 9: begin if (random_num<player_outdoorsman) then begin item := food_mutated_toe; item_count := 2+number_modifier; end end
+         case 10:
+         case 11: begin if (random_num<player_outdoorsman) then begin item :=  food_jerky; item_count := 1+number_modifier; end end
+         case 12:
+         case 13: begin if (random_num < player_outdoorsman) then begin item := food_jerky; item_count := 3+number_modifier; end end
+         case 14:
+         case 15: begin if (random_num<player_outdoorsman) then begin item := food_jerky; item_count := 2+number_modifier; end end
+         case 16:
+         case 17: begin if (random_num<player_outdoorsman) then begin item := food_jerky; item_count := 1+number_modifier; end end
+      end
+
+      if not (item == "") then begin
+         if ((critter_flags bwand 64)) then begin
+               //display_msg ("No loot");
+               while (while_int <= item_count) do begin
+                  create_object_sid(obj_pid(item), dropped_hex, elevation(Lvar2),-1);
+                  dropped_hex := tile_num_in_direction(tile_num(Lvar2), random(0, 5), random(1, 2));
+                  //move_to(item, dropped_hex, elevation(Lvar2));
+                  //display_msg("INT "+ while_int);
+                  while_int := while_int + 1;
+
+               end
+            end
+
+         else begin
+            //display_msg ("loot");
+            add_mult_objs_to_inven (Lvar2, item, item_count);
+
+            end
+      end
+      //display_msg (obj_name(Lvar2));
+
+   end
+end
+
